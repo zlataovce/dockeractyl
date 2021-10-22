@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder(builderClassName = "Builder")
-public final class ContainerSpec {
+public final class ContainerSpec implements Specification {
     @JsonProperty("Command")
     private String command;
     @JsonProperty("CreatedAt")

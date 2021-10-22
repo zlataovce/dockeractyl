@@ -29,6 +29,14 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
                 .id(spec.getId())
                 .image(imageStor.getImageByRepository(spec.getImage()).orElseThrow(() -> new RuntimeException("Could not find image for container " + spec.getId() + "!")))
                 .labels(preprocessLabels(spec.getLabels()))
+                .localVolumes(spec.getLocalVolumes())
+                .mounts(spec.getMounts())
+                .names(spec.getNames())
+                .networks(spec.getNetworks())
+                .ports(spec.getPorts())
+                .size(SerialUtils.parseFileSize(spec.getSize()))
+                .state(spec.getState())
+                .status(spec.getStatus())
                 .build();
     }
 
@@ -40,6 +48,14 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
                 .id(exact.getId())
                 .image(exact.getImage().getRepository())
                 .labels(exact.getLabels().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")))
+                .localVolumes(exact.getLocalVolumes())
+                .mounts(exact.getMounts())
+                .names(exact.getNames())
+                .networks(exact.getNetworks())
+                .ports(exact.getPorts())
+                .size(SerialUtils.humanReadableSize(exact.getSize()))
+                .state(exact.getState())
+                .status(exact.getStatus())
                 .build();
     }
 

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder(builderClassName = "Builder")
-public final class ImageSpec {
+public final class ImageSpec implements Specification {
     @JsonProperty("Containers")
     private String containers;
     @JsonProperty("CreatedAt")

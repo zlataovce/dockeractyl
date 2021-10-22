@@ -21,8 +21,7 @@ public class Container {
     private String names;
     private String networks;
     private String ports;
-    // private String runningFor;
-    private String size;
+    private long size;
     private String state;
     private String status;
 }

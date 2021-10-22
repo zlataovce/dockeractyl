@@ -16,9 +16,9 @@ public class Image {
     private String digest;
     private String id;
     private String repository;
-    private String sharedSize;
-    private String size;
+    private long sharedSize;
+    private long size;
     private String tag;
-    private String uniqueSize;
-    private String virtualSize;
+    private long uniqueSize;
+    private long virtualSize;
 }
