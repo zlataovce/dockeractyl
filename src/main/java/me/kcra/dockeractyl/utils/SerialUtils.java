@@ -57,7 +57,7 @@ public class SerialUtils {
         if (-1000 < bytes && bytes < 1000) {
             return bytes + " B";
         }
-        CharacterIterator ci = new StringCharacterIterator("kMGT");
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
         while (bytes <= -999_950 || bytes >= 999_950) {
             bytes /= 1000;
             ci.next();

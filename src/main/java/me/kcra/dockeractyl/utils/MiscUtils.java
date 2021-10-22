@@ -4,11 +4,24 @@ import lombok.experimental.UtilityClass;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 @UtilityClass
 public class MiscUtils {
     public boolean hasExecutable(String s) {
+        if (getPlatform() == Platform.WINDOWS) {
+            return hasExecutableWindows(s);
+        } else {
+            return hasExecutableUnix(s);
+        }
+    }
+
+    private boolean hasExecutableWindows(String s) {
+        return System.getenv("PATH").toLowerCase(Locale.ROOT).contains("docker");
+    }
+
+    private boolean hasExecutableUnix(String s) {
         return Stream.of(
                 Paths.get(System.getProperty("user.home"), ".local", "bin", s).toFile(),
                 Paths.get(System.getProperty("user.home"), "bin", s).toFile(),
@@ -19,5 +32,15 @@ public class MiscUtils {
                 new File("/sbin/" + s),
                 new File("/bin/" + s)
         ).anyMatch(e -> e.exists() && e.isFile());
+    }
+
+    public Platform getPlatform() {
+        return (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) ? Platform.WINDOWS : Platform.UNIX;
+    }
+
+    // no dumb macOS
+    public enum Platform {
+        WINDOWS,
+        UNIX
     }
 }
