@@ -3,6 +3,7 @@ package me.kcra.dockeractyl.serial;
 import me.kcra.dockeractyl.docker.Container;
 import me.kcra.dockeractyl.docker.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ImageStore;
+import me.kcra.dockeractyl.utils.ImmutablePair;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,18 +24,20 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
 
     @Override
     public Container fromSpec(ContainerSpec spec) {
+        final ImmutablePair<Long, Long> sizes = SerialUtils.parseDockerSizes(spec.getSize());
         return Container.builder()
                 .command(preprocessCommand(spec.getCommand()))
                 .createdAt(SerialUtils.fromTimestamp(spec.getCreatedAt()))
                 .id(spec.getId())
                 .image(imageStor.getImageByRepository(spec.getImage()).orElseThrow(() -> new RuntimeException("Could not find image for container " + spec.getId() + "!")))
                 .labels(preprocessLabels(spec.getLabels()))
-                .localVolumes(spec.getLocalVolumes())
+                .localVolumes(Integer.parseInt(spec.getLocalVolumes()))
                 .mounts(spec.getMounts())
                 .names(spec.getNames())
                 .networks(spec.getNetworks())
                 .ports(spec.getPorts())
-                .size(SerialUtils.parseFileSize(spec.getSize()))
+                .size(sizes.getKey())
+                .virtualSize(sizes.getValue())
                 .state(spec.getState())
                 .status(spec.getStatus())
                 .build();
@@ -48,12 +51,12 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
                 .id(exact.getId())
                 .image(exact.getImage().getRepository())
                 .labels(exact.getLabels().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")))
-                .localVolumes(exact.getLocalVolumes())
+                .localVolumes(Integer.toString(exact.getLocalVolumes()))
                 .mounts(exact.getMounts())
                 .names(exact.getNames())
                 .networks(exact.getNetworks())
                 .ports(exact.getPorts())
-                .size(SerialUtils.humanReadableSize(exact.getSize()))
+                .size(SerialUtils.humanReadableSize(exact.getSize()) + " (virtual " + SerialUtils.humanReadableSize(exact.getVirtualSize()) + ")")
                 .state(exact.getState())
                 .status(exact.getStatus())
                 .build();

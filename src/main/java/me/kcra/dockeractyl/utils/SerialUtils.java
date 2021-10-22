@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class SerialUtils {
     private final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z z");
-    private final Pattern DATE_PATTERN = Pattern.compile("([0-9]+(?:\\.[0-9]+)?) ?([TGMKk]i?B)");
+    private final Pattern SIZE_PATTERN = Pattern.compile("([0-9]+(?:\\.[0-9]+)?) ?([TGMKk]i?B)");
+    private final Pattern DOCKER_SIZE_PATTERN = Pattern.compile("(([0-9]+(?:\\.[0-9]+)?) ?([TGMKk]i?B)) \\(virtual (([0-9]+(?:\\.[0-9]+)?) ?([TGMKk]i?B))\\)");
     private final long KB_FACTOR = 1000;
     private final long KIB_FACTOR = 1024;
     private final long MB_FACTOR = 1000 * KB_FACTOR;
@@ -20,8 +21,13 @@ public class SerialUtils {
     private final long TB_FACTOR = 1000 * GB_FACTOR;
     private final long TIB_FACTOR = 1024 * GIB_FACTOR;
 
+    public ImmutablePair<Long, Long> parseDockerSizes(String s) {
+        final Matcher matcher = DOCKER_SIZE_PATTERN.matcher(s);
+        return ImmutablePair.of(parseFileSize(matcher.group(1)), parseFileSize(matcher.group(2)));
+    }
+
     public long parseFileSize(String s) {
-        final Matcher matcher = DATE_PATTERN.matcher(s);
+        final Matcher matcher = SIZE_PATTERN.matcher(s);
         final double ret = (s.contains(".")) ? Double.parseDouble(matcher.group(1)) : Integer.parseInt(matcher.group(1));
         switch (matcher.group(2)) {
             case "TB":
