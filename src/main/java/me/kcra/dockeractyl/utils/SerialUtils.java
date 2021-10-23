@@ -22,12 +22,14 @@ public class SerialUtils {
     private final long TIB_FACTOR = 1024 * GIB_FACTOR;
 
     public ImmutablePair<Long, Long> parseDockerSizes(String s) {
+        if (s.equals("N/A")) return ImmutablePair.of(0L, 0L);
         final Matcher matcher = DOCKER_SIZE_PATTERN.matcher(s);
         final long virtualSize = (matcher.groupCount() == 2) ? parseFileSize(matcher.group(2)) : 0;
         return ImmutablePair.of(parseFileSize(matcher.group(1)), virtualSize);
     }
 
     public long parseFileSize(String s) {
+        if (s.equals("N/A")) return 0;
         final Matcher matcher = SIZE_PATTERN.matcher(s);
         final double ret = (s.contains(".")) ? Double.parseDouble(matcher.group(1)) : Integer.parseInt(matcher.group(1));
         switch (matcher.group(2)) {
