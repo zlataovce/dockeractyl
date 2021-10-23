@@ -3,6 +3,7 @@ package me.kcra.dockeractyl.utils;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -36,6 +37,10 @@ public class MiscUtils {
 
     public Platform getPlatform() {
         return (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) ? Platform.WINDOWS : Platform.UNIX;
+    }
+
+    public Process process(String... command) throws IOException {
+        return new ProcessBuilder(command).command(command).start();
     }
 
     // no dumb macOS

@@ -8,18 +8,16 @@ import me.kcra.dockeractyl.docker.spec.ImageSpec;
 import me.kcra.dockeractyl.serial.BidirectionalSerializer;
 import me.kcra.dockeractyl.serial.ImageSerializer;
 import me.kcra.dockeractyl.utils.JacksonUtils;
+import me.kcra.dockeractyl.utils.MiscUtils;
+import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -34,16 +32,17 @@ public class ImageStore {
         this.imageSer = imageSer;
     }
 
-    @Async
     @Scheduled(fixedRate = 10, timeUnit = TimeUnit.MINUTES)
     public void updateImages() {
         images.clear();
+        log.info("Refreshing image info...");
         try {
-            final Process proc = Runtime.getRuntime().exec("docker images --format '{{json .}}' --no-trunc --all");
+            final Process proc = MiscUtils.process("docker", "images", "--format", "'{{json .}}'", "--no-trunc", "--all");
             proc.waitFor();
             new BufferedReader(new InputStreamReader(proc.getInputStream())).lines().forEach(e -> {
+                log.info("Retrieved image info: " + e);
                 try {
-                    images.add(imageSer.fromSpec(JacksonUtils.MAPPER.readValue(e, ImageSpec.class)));
+                    images.add(imageSer.fromSpec(JacksonUtils.MAPPER.readValue(SerialUtils.stripEnds(e, "'"), ImageSpec.class)));
                 } catch (JsonProcessingException ex) {
                     log.error("Could not retrieve image!", ex);
                 }
@@ -53,6 +52,7 @@ public class ImageStore {
         } catch (InterruptedException ignored) {
             // ignored
         }
+        log.info("Image info refreshed.");
     }
 
     public Optional<Image> getImageByRepository(String repo) {

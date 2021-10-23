@@ -5,7 +5,6 @@ import me.kcra.dockeractyl.docker.Image;
 import me.kcra.dockeractyl.docker.spec.ImageSpec;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.unit.DataSize;
 
 import java.util.ArrayList;
 import java.util.List;

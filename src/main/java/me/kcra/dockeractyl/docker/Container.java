@@ -9,7 +9,7 @@ import java.util.Map;
 @ToString
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class Container {
     private String command;
     private Date createdAt;

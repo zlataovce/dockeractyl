@@ -8,8 +8,9 @@ import me.kcra.dockeractyl.docker.spec.ContainerSpec;
 import me.kcra.dockeractyl.serial.BidirectionalSerializer;
 import me.kcra.dockeractyl.serial.ContainerSerializer;
 import me.kcra.dockeractyl.utils.JacksonUtils;
+import me.kcra.dockeractyl.utils.MiscUtils;
+import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -34,16 +35,17 @@ public class ContainerStore {
         this.containerSer = containerSer;
     }
 
-    @Async
     @Scheduled(fixedRate = 10, timeUnit = TimeUnit.MINUTES)
     public void updateContainers() {
         containers.clear();
+        log.info("Refreshing container info...");
         try {
-            final Process proc = Runtime.getRuntime().exec("docker ps --format '{{json .}}' --no-trunc --all");
+            final Process proc = MiscUtils.process("docker", "ps", "--format", "'{{json .}}'", "--no-trunc", "--all");
             proc.waitFor();
             new BufferedReader(new InputStreamReader(proc.getInputStream())).lines().forEach(e -> {
+                log.info("Retrieved container details: " + e);
                 try {
-                    containers.add(containerSer.fromSpec(JacksonUtils.MAPPER.readValue(e, ContainerSpec.class)));
+                    containers.add(containerSer.fromSpec(JacksonUtils.MAPPER.readValue(SerialUtils.stripEnds(e, "'"), ContainerSpec.class)));
                 } catch (JsonProcessingException ex) {
                     log.error("Could not retrieve container!", ex);
                 }
@@ -53,6 +55,7 @@ public class ContainerStore {
         } catch (InterruptedException ignored) {
             // ignored
         }
+        log.info("Refreshed container info.");
     }
 
     public Optional<Container> getContainerByID(String id) {

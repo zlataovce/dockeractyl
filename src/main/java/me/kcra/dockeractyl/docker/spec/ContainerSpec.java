@@ -1,10 +1,14 @@
 package me.kcra.dockeractyl.docker.spec;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Builder(builderClassName = "Builder")
 public final class ContainerSpec implements Specification {
     @JsonProperty("Command")

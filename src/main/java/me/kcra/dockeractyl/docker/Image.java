@@ -9,7 +9,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class Image {
     private List<Container> containers;
     private Date createdAt;

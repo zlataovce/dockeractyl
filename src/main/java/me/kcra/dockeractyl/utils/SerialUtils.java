@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class SerialUtils {
     private final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z z");
-    private final Pattern SIZE_PATTERN = Pattern.compile("([0-9]+(?:\\.[0-9]+)?) ?([TGMKk]i?B)");
-    private final Pattern DOCKER_SIZE_PATTERN = Pattern.compile("(([0-9]+(?:\\.[0-9]+)?) ?([TGMKk]i?B)) \\(virtual (([0-9]+(?:\\.[0-9]+)?) ?([TGMKk]i?B))\\)");
+    private final Pattern SIZE_PATTERN = Pattern.compile("([0-9]+(?:\\.[0-9]+)?) ?((?:[TGMKk]i?)?B)");
+    private final Pattern DOCKER_SIZE_PATTERN = Pattern.compile("(([0-9]+(?:\\.[0-9]+)?) ?((?:[TGMKk]i?)?B))(?: \\(virtual (([0-9]+(?:\\.[0-9]+)?) ?((?:[TGMKk]i?)?B))\\))?");
     private final long KB_FACTOR = 1000;
     private final long KIB_FACTOR = 1024;
     private final long MB_FACTOR = 1000 * KB_FACTOR;
@@ -23,7 +23,8 @@ public class SerialUtils {
 
     public ImmutablePair<Long, Long> parseDockerSizes(String s) {
         final Matcher matcher = DOCKER_SIZE_PATTERN.matcher(s);
-        return ImmutablePair.of(parseFileSize(matcher.group(1)), parseFileSize(matcher.group(2)));
+        final long virtualSize = (matcher.groupCount() == 2) ? parseFileSize(matcher.group(2)) : 0;
+        return ImmutablePair.of(parseFileSize(matcher.group(1)), virtualSize);
     }
 
     public long parseFileSize(String s) {
@@ -48,6 +49,8 @@ public class SerialUtils {
             case "kiB":
             case "KiB":
                 return Math.round(ret * KIB_FACTOR);
+            case "B":
+                return Math.round(ret);
             default:
                 return 0;
         }
@@ -65,6 +68,10 @@ public class SerialUtils {
         return String.format("%.1f %cB", bytes / 1000.0, ci.current());
     }
 
+    public String sizeString(long size, long virtual) {
+        return (virtual == 0) ? humanReadableSize(size) : humanReadableSize(size) + " (virtual " + humanReadableSize(virtual) + ")";
+    }
+
     public Date fromTimestamp(String timestamp) {
         try {
             return DATE_FORMATTER.parse(timestamp);
@@ -75,5 +82,15 @@ public class SerialUtils {
 
     public String toTimestamp(Date date) {
         return DATE_FORMATTER.format(date);
+    }
+
+    public String stripEnds(String s, String end) {
+        if (s.startsWith(end)) {
+            s = s.replaceFirst(end, "");
+        }
+        if (s.endsWith(end)) {
+            s = s.replaceFirst(end, "");
+        }
+        return s;
     }
 }

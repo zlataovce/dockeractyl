@@ -26,7 +26,7 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
     public Container fromSpec(ContainerSpec spec) {
         final ImmutablePair<Long, Long> sizes = SerialUtils.parseDockerSizes(spec.getSize());
         return Container.builder()
-                .command(preprocessCommand(spec.getCommand()))
+                .command(SerialUtils.stripEnds(spec.getCommand(), "\""))
                 .createdAt(SerialUtils.fromTimestamp(spec.getCreatedAt()))
                 .id(spec.getId())
                 .image(imageStor.getImageByRepository(spec.getImage()).orElseThrow(() -> new RuntimeException("Could not find image for container " + spec.getId() + "!")))
@@ -56,20 +56,10 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
                 .names(exact.getNames())
                 .networks(exact.getNetworks())
                 .ports(exact.getPorts())
-                .size(SerialUtils.humanReadableSize(exact.getSize()) + " (virtual " + SerialUtils.humanReadableSize(exact.getVirtualSize()) + ")")
+                .size(SerialUtils.sizeString(exact.getSize(), exact.getVirtualSize()))
                 .state(exact.getState())
                 .status(exact.getStatus())
                 .build();
-    }
-
-    private String preprocessCommand(String s) {
-        if (s.startsWith("\"")) {
-            s = s.replaceFirst("\"", "");
-        }
-        if (s.endsWith("\"")) {
-            s = s.replaceFirst("\"", "");
-        }
-        return s;
     }
 
     private Map<String, String> preprocessLabels(String s) {
