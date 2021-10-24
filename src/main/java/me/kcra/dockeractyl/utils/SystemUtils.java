@@ -9,7 +9,7 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 @UtilityClass
-public class MiscUtils {
+public class SystemUtils {
     public boolean hasExecutable(String s) {
         if (getPlatform() == Platform.WINDOWS) {
             return hasExecutableWindows(s);
@@ -36,7 +36,7 @@ public class MiscUtils {
     }
 
     public Platform getPlatform() {
-        return (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) ? Platform.WINDOWS : Platform.UNIX;
+        return (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")) ? Platform.WINDOWS : Platform.UNIX;
     }
 
     public Process process(String... command) throws IOException {

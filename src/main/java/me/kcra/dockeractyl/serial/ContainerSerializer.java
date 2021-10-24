@@ -29,7 +29,7 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
                 .command(SerialUtils.stripEnds(spec.getCommand(), "\""))
                 .createdAt(SerialUtils.fromTimestamp(spec.getCreatedAt()))
                 .id(spec.getId())
-                .image(imageStor.getImageByRepository(spec.getImage()).orElseThrow(() -> new RuntimeException("Could not find image for container " + spec.getId() + "!")))
+                .image(imageStor.getImage(spec.getImage()).orElseThrow(() -> new RuntimeException("Could not find image for container " + spec.getId() + "!")))
                 .labels(preprocessLabels(spec.getLabels()))
                 .localVolumes(Integer.parseInt(spec.getLocalVolumes()))
                 .mounts(spec.getMounts())

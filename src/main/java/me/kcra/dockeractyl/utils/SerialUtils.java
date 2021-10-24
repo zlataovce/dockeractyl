@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class SerialUtils {
     private final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z z");
-    private final Pattern SIZE_PATTERN = Pattern.compile("([0-9]+(?:\\.[0-9]+)?) ?((?:[TGMKk]i?)?B)");
-    private final Pattern DOCKER_SIZE_PATTERN = Pattern.compile("(([0-9]+(?:\\.[0-9]+)?) ?((?:[TGMKk]i?)?B))(?: \\(virtual (([0-9]+(?:\\.[0-9]+)?) ?((?:[TGMKk]i?)?B))\\))?");
+    private final Pattern SIZE_PATTERN = Pattern.compile("(\\d+(?:\\.\\d+)?) ?((?:[TGMKk]i?)?B)");
+    private final Pattern DOCKER_SIZE_PATTERN = Pattern.compile("((\\d+(?:\\.\\d+)?) ?((?:[TGMKk]i?)?B))(?: \\(virtual ((\\d+(?:\\.\\d+)?) ?((?:[TGMKk]i?)?B))\\))?");
     private final long KB_FACTOR = 1000;
     private final long KIB_FACTOR = 1024;
     private final long MB_FACTOR = 1000 * KB_FACTOR;
@@ -22,47 +22,49 @@ public class SerialUtils {
     private final long TIB_FACTOR = 1024 * GIB_FACTOR;
 
     public ImmutablePair<Long, Long> parseDockerSizes(String s) {
-        if (s.equals("N/A")) return ImmutablePair.of(0L, 0L);
         final Matcher matcher = DOCKER_SIZE_PATTERN.matcher(s);
-        final long virtualSize = (matcher.groupCount() == 2) ? parseFileSize(matcher.group(2)) : 0;
-        return ImmutablePair.of(parseFileSize(matcher.group(1)), virtualSize);
+        if (matcher.matches()) {
+            final long virtualSize = (matcher.groupCount() == 2) ? parseFileSize(matcher.group(2)) : 0;
+            return ImmutablePair.of(parseFileSize(matcher.group(1)), virtualSize);
+        }
+        return ImmutablePair.of(0L, 0L);
     }
 
     public long parseFileSize(String s) {
-        if (s.equals("N/A")) return 0;
         final Matcher matcher = SIZE_PATTERN.matcher(s);
-        final double ret = (s.contains(".")) ? Double.parseDouble(matcher.group(1)) : Integer.parseInt(matcher.group(1));
-        switch (matcher.group(2)) {
-            case "TB":
-                return Math.round(ret * TB_FACTOR);
-            case "TiB":
-                return Math.round(ret * TIB_FACTOR);
-            case "GB":
-                return Math.round(ret * GB_FACTOR);
-            case "GiB":
-                return Math.round(ret * GIB_FACTOR);
-            case "MB":
-                return Math.round(ret * MB_FACTOR);
-            case "MiB":
-                return Math.round(ret * MIB_FACTOR);
-            case "kB":
-            case "KB":
-                return Math.round(ret * KB_FACTOR);
-            case "kiB":
-            case "KiB":
-                return Math.round(ret * KIB_FACTOR);
-            case "B":
-                return Math.round(ret);
-            default:
-                return 0;
+        if (matcher.matches()) {
+            final double ret = (s.contains(".")) ? Double.parseDouble(matcher.group(1)) : Integer.parseInt(matcher.group(1));
+            switch (matcher.group(2)) {
+                case "TB":
+                    return Math.round(ret * TB_FACTOR);
+                case "TiB":
+                    return Math.round(ret * TIB_FACTOR);
+                case "GB":
+                    return Math.round(ret * GB_FACTOR);
+                case "GiB":
+                    return Math.round(ret * GIB_FACTOR);
+                case "MB":
+                    return Math.round(ret * MB_FACTOR);
+                case "MiB":
+                    return Math.round(ret * MIB_FACTOR);
+                case "kB":
+                case "KB":
+                    return Math.round(ret * KB_FACTOR);
+                case "kiB":
+                case "KiB":
+                    return Math.round(ret * KIB_FACTOR);
+                case "B":
+                    return Math.round(ret);
+            }
         }
+        return 0;
     }
 
     public String humanReadableSize(long bytes) {
         if (-1000 < bytes && bytes < 1000) {
             return bytes + " B";
         }
-        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        final CharacterIterator ci = new StringCharacterIterator("kMGTPE");
         while (bytes <= -999_950 || bytes >= 999_950) {
             bytes /= 1000;
             ci.next();

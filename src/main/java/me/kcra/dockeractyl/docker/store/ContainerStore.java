@@ -8,7 +8,7 @@ import me.kcra.dockeractyl.docker.spec.ContainerSpec;
 import me.kcra.dockeractyl.serial.BidirectionalSerializer;
 import me.kcra.dockeractyl.serial.ContainerSerializer;
 import me.kcra.dockeractyl.utils.JacksonUtils;
-import me.kcra.dockeractyl.utils.MiscUtils;
+import me.kcra.dockeractyl.utils.SystemUtils;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -40,7 +40,7 @@ public class ContainerStore {
         containers.clear();
         log.info("Refreshing container info...");
         try {
-            final Process proc = MiscUtils.process("docker", "ps", "--format", "'{{json .}}'", "--no-trunc", "--all");
+            final Process proc = SystemUtils.process("docker", "ps", "--format", "'{{json .}}'", "--no-trunc", "--all");
             proc.waitFor();
             new BufferedReader(new InputStreamReader(proc.getInputStream())).lines().forEach(e -> {
                 log.info("Retrieved container details: " + e);
@@ -58,7 +58,7 @@ public class ContainerStore {
         log.info("Refreshed container info.");
     }
 
-    public Optional<Container> getContainerByID(String id) {
-        return containers.stream().filter(e -> e.getId().equals(id)).findFirst();
+    public Optional<Container> getContainer(String id) {
+        return containers.stream().filter(e -> e.getId().equals(id) || e.getNames().equals(id)).findFirst();
     }
 }

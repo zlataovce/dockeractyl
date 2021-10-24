@@ -29,13 +29,13 @@ public class ImageController {
 
     @GetMapping(path = "/find/{repo}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findImage(@PathVariable String repo) {
-        final Optional<Image> image = imageStor.getImageByRepository(repo);
+        final Optional<Image> image = imageStor.getImage(repo);
         return (image.isPresent()) ? new ResponseEntity<>(image.orElseThrow(), HttpStatus.OK) : new ResponseEntity<>(Collections.singletonMap("error", "Image not found."), HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(path = "/find/{repo}/raw", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findImageRaw(@PathVariable String repo) {
-        final Optional<Image> image = imageStor.getImageByRepository(repo);
+        final Optional<Image> image = imageStor.getImage(repo);
         return (image.isPresent()) ? new ResponseEntity<>(imageSer.toSpec(image.orElseThrow()), HttpStatus.OK) : new ResponseEntity<>(Collections.singletonMap("error", "Image not found."), HttpStatus.NOT_FOUND);
     }
 }

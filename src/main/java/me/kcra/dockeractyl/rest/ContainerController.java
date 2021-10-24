@@ -29,13 +29,13 @@ public class ContainerController {
 
     @GetMapping(path = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findContainer(@PathVariable String id) {
-        final Optional<Container> container = containerStor.getContainerByID(id);
+        final Optional<Container> container = containerStor.getContainer(id);
         return (container.isPresent()) ? new ResponseEntity<>(container.orElseThrow(), HttpStatus.OK) : new ResponseEntity<>(Collections.singletonMap("error", "Container not found."), HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(path = "/find/{id}/raw", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findContainerRaw(@PathVariable String id) {
-        final Optional<Container> container = containerStor.getContainerByID(id);
+        final Optional<Container> container = containerStor.getContainer(id);
         return (container.isPresent()) ? new ResponseEntity<>(containerSer.toSpec(container.orElseThrow()), HttpStatus.OK) : new ResponseEntity<>(Collections.singletonMap("error", "Container not found."), HttpStatus.NOT_FOUND);
     }
 }

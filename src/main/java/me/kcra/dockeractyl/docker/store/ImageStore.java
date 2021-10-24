@@ -8,7 +8,7 @@ import me.kcra.dockeractyl.docker.spec.ImageSpec;
 import me.kcra.dockeractyl.serial.BidirectionalSerializer;
 import me.kcra.dockeractyl.serial.ImageSerializer;
 import me.kcra.dockeractyl.utils.JacksonUtils;
-import me.kcra.dockeractyl.utils.MiscUtils;
+import me.kcra.dockeractyl.utils.SystemUtils;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,7 +37,7 @@ public class ImageStore {
         images.clear();
         log.info("Refreshing image info...");
         try {
-            final Process proc = MiscUtils.process("docker", "images", "--format", "'{{json .}}'", "--no-trunc", "--all");
+            final Process proc = SystemUtils.process("docker", "images", "--format", "'{{json .}}'", "--no-trunc", "--all");
             proc.waitFor();
             new BufferedReader(new InputStreamReader(proc.getInputStream())).lines().forEach(e -> {
                 log.info("Retrieved image info: " + e);
@@ -55,7 +55,7 @@ public class ImageStore {
         log.info("Image info refreshed.");
     }
 
-    public Optional<Image> getImageByRepository(String repo) {
-        return images.stream().filter(image -> image.getRepository().equals(repo)).findFirst();
+    public Optional<Image> getImage(String img) {
+        return images.stream().filter(image -> image.getRepository().equals(img) || (image.getRepository() + ":" + image.getTag()).equals(img) || image.getId().equals(img)).findFirst();
     }
 }
