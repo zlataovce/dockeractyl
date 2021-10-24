@@ -93,7 +93,7 @@ public class SerialUtils {
             s = s.replaceFirst(end, "");
         }
         if (s.endsWith(end)) {
-            s = s.replaceFirst(end, "");
+            s = s.substring(0, s.lastIndexOf(end) - 1);
         }
         return s;
     }

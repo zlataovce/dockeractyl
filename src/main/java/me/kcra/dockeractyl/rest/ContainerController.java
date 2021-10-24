@@ -5,8 +5,8 @@ import me.kcra.dockeractyl.docker.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ContainerStore;
 import me.kcra.dockeractyl.serial.BidirectionalSerializer;
 import me.kcra.dockeractyl.serial.ContainerSerializer;
+import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +30,17 @@ public class ContainerController {
     @GetMapping(path = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findContainer(@PathVariable String id) {
         final Optional<Container> container = containerStor.getContainer(id);
-        return (container.isPresent()) ? new ResponseEntity<>(container.orElseThrow(), HttpStatus.OK) : new ResponseEntity<>(Collections.singletonMap("error", "Container not found."), HttpStatus.NOT_FOUND);
+        return (container.isPresent()) ? ResponseEntity.ok(container.orElseThrow()) : Responses.notFound(Collections.singletonMap("error", "Container not found."));
     }
 
     @GetMapping(path = "/find/{id}/raw", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findContainerRaw(@PathVariable String id) {
         final Optional<Container> container = containerStor.getContainer(id);
-        return (container.isPresent()) ? new ResponseEntity<>(containerSer.toSpec(container.orElseThrow()), HttpStatus.OK) : new ResponseEntity<>(Collections.singletonMap("error", "Container not found."), HttpStatus.NOT_FOUND);
+        return (container.isPresent()) ? ResponseEntity.ok(containerSer.toSpec(container.orElseThrow())) : Responses.notFound(Collections.singletonMap("error", "Container not found."));
+    }
+
+    @GetMapping(path = "/all", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> allContainers() {
+        return ResponseEntity.ok(containerStor.getContainers());
     }
 }
