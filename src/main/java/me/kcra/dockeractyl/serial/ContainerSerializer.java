@@ -1,6 +1,7 @@
 package me.kcra.dockeractyl.serial;
 
 import me.kcra.dockeractyl.docker.Container;
+import me.kcra.dockeractyl.docker.Network;
 import me.kcra.dockeractyl.docker.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ImageStore;
 import me.kcra.dockeractyl.utils.ImmutablePair;
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
 @Service
 public class ContainerSerializer implements BidirectionalSerializer<ContainerSpec, Container> {
     private final ImageStore imageStor;
+    private final BidirectionalSerializer<String, Network.Port> portSer;
 
     @Autowired
-    public ContainerSerializer(ImageStore imageStor) {
+    public ContainerSerializer(ImageStore imageStor, PortSerializer portSer) {
         this.imageStor = imageStor;
+        this.portSer = portSer;
     }
 
     @Override
@@ -34,11 +37,11 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
                 .localVolumes(Integer.parseInt(spec.getLocalVolumes()))
                 .mounts(spec.getMounts())
                 .names(spec.getNames())
-                .networks(spec.getNetworks())
-                .ports(spec.getPorts())
+                .networks(Arrays.stream(spec.getNetworks().split(", ")).map(SerialUtils::fromDockerNetwork).collect(Collectors.toUnmodifiableList()))
+                .ports(Arrays.stream(spec.getPorts().split(", ")).map(portSer::fromSpec).collect(Collectors.toUnmodifiableList()))
                 .size(sizes.getKey())
                 .virtualSize(sizes.getValue())
-                .state(spec.getState())
+                .state(Container.State.fromDocker(spec.getState()))
                 .status(spec.getStatus())
                 .build();
     }
@@ -54,10 +57,10 @@ public class ContainerSerializer implements BidirectionalSerializer<ContainerSpe
                 .localVolumes(Integer.toString(exact.getLocalVolumes()))
                 .mounts(exact.getMounts())
                 .names(exact.getNames())
-                .networks(exact.getNetworks())
-                .ports(exact.getPorts())
+                .networks(exact.getNetworks().stream().map(SerialUtils::toDockerNetwork).collect(Collectors.joining(", ")))
+                .ports(exact.getPorts().stream().map(portSer::toSpec).collect(Collectors.joining(", ")))
                 .size(SerialUtils.sizeString(exact.getSize(), exact.getVirtualSize()))
-                .state(exact.getState())
+                .state(exact.getState().getDockerState())
                 .status(exact.getStatus())
                 .build();
     }

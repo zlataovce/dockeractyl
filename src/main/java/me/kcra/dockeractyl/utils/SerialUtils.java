@@ -1,9 +1,11 @@
 package me.kcra.dockeractyl.utils;
 
 import lombok.experimental.UtilityClass;
+import me.kcra.dockeractyl.docker.Network;
 
 import java.text.*;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +26,7 @@ public class SerialUtils {
     public ImmutablePair<Long, Long> parseDockerSizes(String s) {
         final Matcher matcher = DOCKER_SIZE_PATTERN.matcher(s);
         if (matcher.matches()) {
-            final long virtualSize = (matcher.groupCount() == 2) ? parseFileSize(matcher.group(2)) : 0;
+            final long virtualSize = (matcher.results().count() == 2) ? parseFileSize(matcher.group(2)) : 0;
             return ImmutablePair.of(parseFileSize(matcher.group(1)), virtualSize);
         }
         return ImmutablePair.of(0L, 0L);
@@ -96,5 +98,21 @@ public class SerialUtils {
             s = s.substring(0, s.lastIndexOf(end) - 1);
         }
         return s;
+    }
+
+    public ImmutablePair<Integer, Network.Protocol> fromDockerPort(String s) {
+        final String[] parts = s.split("/");
+        return ImmutablePair.of(Integer.parseInt(parts[0]), Network.Protocol.valueOf(parts[1].toUpperCase(Locale.ROOT)));
+    }
+
+    public Network fromDockerNetwork(String s) {
+        return new Network(null, Network.Type.BRIDGE);
+    }
+
+    public String toDockerNetwork(Network net) {
+        if (net.getName() == null) {
+            return net.getType().name().toLowerCase(Locale.ROOT);
+        }
+        return net.getName();
     }
 }
