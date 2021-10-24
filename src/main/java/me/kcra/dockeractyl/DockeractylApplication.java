@@ -6,6 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Slf4j
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {"me.kcra.dockeractyl"})
@@ -13,6 +16,10 @@ public class DockeractylApplication {
     public static void main(String[] args) {
         if (!SystemUtils.hasExecutable("docker")) {
             log.error("Docker was not found on your machine, please install it!");
+            System.exit(-1);
+        }
+        if (!SystemUtils.hasExecutable("docker-compose")) {
+            log.error("Docker Compose was not found on your machine, please install it!");
             System.exit(-1);
         }
         new SpringApplicationBuilder(DockeractylApplication.class)

@@ -40,7 +40,7 @@ public class SystemUtils {
     }
 
     public Process process(String... command) throws IOException {
-        return new ProcessBuilder(command).command(command).start();
+        return new ProcessBuilder(command).start();
     }
 
     // no dumb macOS

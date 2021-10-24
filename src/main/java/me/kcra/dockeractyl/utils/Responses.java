@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 @UtilityClass
 public class Responses {
     public <T> ResponseEntity<T> notFound(T body) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    public <T> ResponseEntity<T> badRequest(T body) {
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }

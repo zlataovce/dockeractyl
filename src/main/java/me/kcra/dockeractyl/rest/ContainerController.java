@@ -1,6 +1,7 @@
 package me.kcra.dockeractyl.rest;
 
 import me.kcra.dockeractyl.docker.Container;
+import me.kcra.dockeractyl.docker.exceptions.ComposeException;
 import me.kcra.dockeractyl.docker.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ContainerStore;
 import me.kcra.dockeractyl.serial.BidirectionalSerializer;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -42,5 +45,20 @@ public class ContainerController {
     @GetMapping(path = "/all", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> allContainers() {
         return ResponseEntity.ok(containerStor.getContainers());
+    }
+
+    @PostMapping(path = "/compose")
+    public ResponseEntity<?> composeContainer(@RequestBody String body) {
+        try {
+            new Yaml().load(body);
+        } catch (YAMLException e) {
+            return Responses.badRequest(Collections.singletonMap("error", "Invalid YAML structure"));
+        }
+        try {
+            containerStor.compose(body.split("\n"));
+        } catch (ComposeException e) {
+            return Responses.badRequest(Collections.singletonMap("error", e.getMessage()));
+        }
+        return ResponseEntity.ok(null);
     }
 }

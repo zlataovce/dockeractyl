@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "dockeractyl.temp",
+      "type": "java.lang.String",
+      "description": "Dockeractyl temporary files folder."
+    },
+    {
+      "name": "dockeractyl.task.sched.pool",
+      "type": "java.lang.Integer",
+      "description": "Size of the scheduler pool."
+    },
+    {
+      "name": "dockeractyl.task.exec.pool",
+      "type": "java.lang.Integer",
+      "description": "Size of the executor pool."
+    }
+  ]
+}
