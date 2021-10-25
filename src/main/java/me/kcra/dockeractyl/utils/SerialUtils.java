@@ -1,19 +1,20 @@
 package me.kcra.dockeractyl.utils;
 
 import lombok.experimental.UtilityClass;
-import me.kcra.dockeractyl.docker.Network;
+import me.kcra.dockeractyl.docker.model.Network;
 
 import java.text.*;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class SerialUtils {
     private final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z z");
     private final Pattern SIZE_PATTERN = Pattern.compile("(\\d+(?:\\.\\d+)?) ?((?:[TGMKk]i?)?B)");
     private final Pattern DOCKER_SIZE_PATTERN = Pattern.compile("((\\d+(?:\\.\\d+)?) ?((?:[TGMKk]i?)?B))(?: \\(virtual ((\\d+(?:\\.\\d+)?) ?((?:[TGMKk]i?)?B))\\))?");
+    private final Pattern PROPERTIES_PATTERN = Pattern.compile("^([^=]+)=(.*)$");
     private final long KB_FACTOR = 1000;
     private final long KIB_FACTOR = 1024;
     private final long MB_FACTOR = 1000 * KB_FACTOR;
@@ -105,14 +106,13 @@ public class SerialUtils {
         return ImmutablePair.of(Integer.parseInt(parts[0]), Network.Protocol.valueOf(parts[1].toUpperCase(Locale.ROOT)));
     }
 
-    public Network fromDockerNetwork(String s) {
-        return new Network(null, Network.Type.BRIDGE);
-    }
-
-    public String toDockerNetwork(Network net) {
-        if (net.getName() == null) {
-            return net.getType().name().toLowerCase(Locale.ROOT);
-        }
-        return net.getName();
+    public Map<String, String> parseLabels(String s) {
+        return Arrays.stream(s.split(",")).map(e -> {
+            final Matcher matcher = PROPERTIES_PATTERN.matcher(e);
+            if (matcher.matches()) {
+                return Map.entry(matcher.group(1), matcher.group(2));
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

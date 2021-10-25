@@ -1,8 +1,8 @@
 package me.kcra.dockeractyl.serial;
 
-import me.kcra.dockeractyl.docker.Container;
-import me.kcra.dockeractyl.docker.Image;
-import me.kcra.dockeractyl.docker.spec.ImageSpec;
+import me.kcra.dockeractyl.docker.model.Container;
+import me.kcra.dockeractyl.docker.model.Image;
+import me.kcra.dockeractyl.docker.model.spec.ImageSpec;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.stereotype.Service;
 

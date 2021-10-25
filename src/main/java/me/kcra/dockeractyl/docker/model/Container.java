@@ -1,8 +1,7 @@
-package me.kcra.dockeractyl.docker;
+package me.kcra.dockeractyl.docker.model;
 
 import lombok.*;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +27,7 @@ public class Container {
     private State state;
     private String status;
 
-    @Getter
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public enum State {
-        RUNNING("running"),
-        EXITED("exited");
-
-        private final String dockerState;
-
-        public static State fromDocker(String dockerState) {
-            return Arrays.stream(State.values()).filter(e -> e.dockerState.equals(dockerState)).findFirst().orElseThrow(() -> new IllegalArgumentException("No enum found"));
-        }
+        RUNNING, EXITED
     }
 }

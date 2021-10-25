@@ -1,4 +1,4 @@
-package me.kcra.dockeractyl.docker;
+package me.kcra.dockeractyl.docker.model;
 
 import lombok.*;
 

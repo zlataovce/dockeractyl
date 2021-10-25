@@ -1,6 +1,6 @@
 package me.kcra.dockeractyl.serial;
 
-import me.kcra.dockeractyl.docker.Network;
+import me.kcra.dockeractyl.docker.model.Network;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.stereotype.Service;
 

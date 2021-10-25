@@ -1,7 +1,7 @@
 package me.kcra.dockeractyl.rest;
 
-import me.kcra.dockeractyl.docker.Container;
-import me.kcra.dockeractyl.docker.spec.ContainerSpec;
+import me.kcra.dockeractyl.docker.model.Container;
+import me.kcra.dockeractyl.docker.model.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ContainerStore;
 import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.serial.ContainerSerializer;

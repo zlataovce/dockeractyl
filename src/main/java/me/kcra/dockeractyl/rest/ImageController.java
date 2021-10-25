@@ -1,7 +1,7 @@
 package me.kcra.dockeractyl.rest;
 
-import me.kcra.dockeractyl.docker.Image;
-import me.kcra.dockeractyl.docker.spec.ImageSpec;
+import me.kcra.dockeractyl.docker.model.Image;
+import me.kcra.dockeractyl.docker.model.spec.ImageSpec;
 import me.kcra.dockeractyl.docker.store.ImageStore;
 import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.serial.ImageSerializer;

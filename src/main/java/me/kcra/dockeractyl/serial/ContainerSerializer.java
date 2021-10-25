@@ -1,28 +1,31 @@
 package me.kcra.dockeractyl.serial;
 
-import me.kcra.dockeractyl.docker.Container;
-import me.kcra.dockeractyl.docker.Network;
-import me.kcra.dockeractyl.docker.spec.ContainerSpec;
+import me.kcra.dockeractyl.docker.model.Container;
+import me.kcra.dockeractyl.docker.model.Network;
+import me.kcra.dockeractyl.docker.model.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ImageStore;
+import me.kcra.dockeractyl.docker.store.NetworkStore;
 import me.kcra.dockeractyl.utils.ImmutablePair;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class ContainerSerializer implements DockerSerializer<ContainerSpec, Container> {
     private final ImageStore imageStor;
+    private final NetworkStore networkStor;
     private final DockerSerializer<String, Network.Port> portSer;
 
     @Autowired
-    public ContainerSerializer(ImageStore imageStor, PortSerializer portSer) {
+    public ContainerSerializer(ImageStore imageStor, NetworkStore networkStor, PortSerializer portSer) {
         this.imageStor = imageStor;
         this.portSer = portSer;
+        this.networkStor = networkStor;
     }
 
     @Override
@@ -33,15 +36,21 @@ public class ContainerSerializer implements DockerSerializer<ContainerSpec, Cont
                 .createdAt(SerialUtils.fromTimestamp(spec.getCreatedAt()))
                 .id(spec.getId())
                 .image(imageStor.getImage(spec.getImage()).orElseThrow(() -> new RuntimeException("Could not find image for container " + spec.getId() + "!")))
-                .labels(preprocessLabels(spec.getLabels()))
+                .labels(SerialUtils.parseLabels(spec.getLabels()))
                 .localVolumes(Integer.parseInt(spec.getLocalVolumes()))
                 .mounts(spec.getMounts())
                 .names(spec.getNames())
-                .networks(Arrays.stream(spec.getNetworks().split(", ")).map(SerialUtils::fromDockerNetwork).collect(Collectors.toUnmodifiableList()))
+                .networks(
+                        Arrays.stream(spec.getNetworks().split(", "))
+                                .map(net -> networkStor.getNetwork(net).orElseGet(() -> Network.builder()
+                                        .driver(Network.Driver.valueOf(net.toUpperCase(Locale.ROOT)))
+                                        .build()
+                                )).collect(Collectors.toUnmodifiableList())
+                )
                 .ports(Arrays.stream(spec.getPorts().split(", ")).map(portSer::fromSpec).collect(Collectors.toUnmodifiableList()))
                 .size(sizes.getKey())
                 .virtualSize(sizes.getValue())
-                .state(Container.State.fromDocker(spec.getState()))
+                .state(Container.State.valueOf(spec.getState().toUpperCase(Locale.ROOT)))
                 .status(spec.getStatus())
                 .build();
     }
@@ -57,20 +66,15 @@ public class ContainerSerializer implements DockerSerializer<ContainerSpec, Cont
                 .localVolumes(Integer.toString(exact.getLocalVolumes()))
                 .mounts(exact.getMounts())
                 .names(exact.getNames())
-                .networks(exact.getNetworks().stream().map(SerialUtils::toDockerNetwork).collect(Collectors.joining(", ")))
+                .networks(
+                        exact.getNetworks().stream()
+                                .map(net -> Objects.requireNonNullElse(net.getName(), net.getDriver().name().toLowerCase(Locale.ROOT)))
+                                .collect(Collectors.joining(", "))
+                )
                 .ports(exact.getPorts().stream().map(portSer::toSpec).collect(Collectors.joining(", ")))
                 .size(SerialUtils.sizeString(exact.getSize(), exact.getVirtualSize()))
-                .state(exact.getState().getDockerState())
+                .state(exact.getState().name().toLowerCase(Locale.ROOT))
                 .status(exact.getStatus())
                 .build();
-    }
-
-    private Map<String, String> preprocessLabels(String s) {
-        final Map<String, String> procLabels = new HashMap<>();
-        Arrays.stream(s.split(",")).forEach(e -> {
-            final String[] parts = e.split("=");
-            procLabels.put(parts[0], String.join("=", Arrays.copyOfRange(parts, 1, parts.length)));
-        });
-        return procLabels;
     }
 }

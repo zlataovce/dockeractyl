@@ -1,4 +1,4 @@
-package me.kcra.dockeractyl.docker.spec;
+package me.kcra.dockeractyl.docker.model.spec;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Builder(builderClassName = "Builder")
-public final class ContainerSpec implements DockerData {
+public final class ContainerSpec {
     @JsonProperty("Command")
     private String command;
     @JsonProperty("CreatedAt")
