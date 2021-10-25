@@ -13,4 +13,8 @@ public class Responses {
     public <T> ResponseEntity<T> badRequest(T body) {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+    public <T> ResponseEntity<T> processing(T body) {
+        return new ResponseEntity<>(body, HttpStatus.PROCESSING);
+    }
 }

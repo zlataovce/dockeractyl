@@ -1,10 +1,9 @@
 package me.kcra.dockeractyl.rest;
 
 import me.kcra.dockeractyl.docker.Container;
-import me.kcra.dockeractyl.docker.exceptions.ComposeException;
 import me.kcra.dockeractyl.docker.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ContainerStore;
-import me.kcra.dockeractyl.serial.BidirectionalSerializer;
+import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.serial.ContainerSerializer;
 import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ import java.util.Optional;
 @RequestMapping(path = "/container")
 public class ContainerController {
     private final ContainerStore containerStor;
-    private final BidirectionalSerializer<ContainerSpec, Container> containerSer;
+    private final DockerSerializer<ContainerSpec, Container> containerSer;
 
     @Autowired
     public ContainerController(ContainerStore containerStor, ContainerSerializer containerSer) {
@@ -54,11 +53,7 @@ public class ContainerController {
         } catch (YAMLException e) {
             return Responses.badRequest(Collections.singletonMap("error", "Invalid YAML structure"));
         }
-        try {
-            containerStor.compose(body.split("\n"));
-        } catch (ComposeException e) {
-            return Responses.badRequest(Collections.singletonMap("error", e.getMessage()));
-        }
-        return ResponseEntity.ok(null);
+        containerStor.composeAsynchronously(body.split("\n"));
+        return Responses.processing(null);
     }
 }

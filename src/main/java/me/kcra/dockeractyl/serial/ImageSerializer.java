@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ImageSerializer implements BidirectionalSerializer<ImageSpec, Image> {
+public class ImageSerializer implements DockerSerializer<ImageSpec, Image> {
     @Override
     public Image fromSpec(ImageSpec spec) {
         return Image.builder()

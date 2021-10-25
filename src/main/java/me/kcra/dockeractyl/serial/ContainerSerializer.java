@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class ContainerSerializer implements BidirectionalSerializer<ContainerSpec, Container> {
+public class ContainerSerializer implements DockerSerializer<ContainerSpec, Container> {
     private final ImageStore imageStor;
-    private final BidirectionalSerializer<String, Network.Port> portSer;
+    private final DockerSerializer<String, Network.Port> portSer;
 
     @Autowired
     public ContainerSerializer(ImageStore imageStor, PortSerializer portSer) {

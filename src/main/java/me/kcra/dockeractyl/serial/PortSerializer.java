@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Locale;
 
 @Service
-public class PortSerializer implements BidirectionalSerializer<String, Network.Port> {
+public class PortSerializer implements DockerSerializer<String, Network.Port> {
     @Override
     public String toSpec(Network.Port exact) {
         if (exact.getOuter() != null) {

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.kcra.dockeractyl.docker.Image;
 import me.kcra.dockeractyl.docker.spec.ImageSpec;
-import me.kcra.dockeractyl.serial.BidirectionalSerializer;
+import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.serial.ImageSerializer;
 import me.kcra.dockeractyl.utils.JacksonUtils;
 import me.kcra.dockeractyl.utils.SystemUtils;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class ImageStore {
     @Getter
     private final List<Image> images = Collections.synchronizedList(new ArrayList<>());
-    private final BidirectionalSerializer<ImageSpec, Image> imageSer;
+    private final DockerSerializer<ImageSpec, Image> imageSer;
 
     @Autowired
     public ImageStore(ImageSerializer imageSer) {

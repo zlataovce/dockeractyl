@@ -3,7 +3,7 @@ package me.kcra.dockeractyl.rest;
 import me.kcra.dockeractyl.docker.Image;
 import me.kcra.dockeractyl.docker.spec.ImageSpec;
 import me.kcra.dockeractyl.docker.store.ImageStore;
-import me.kcra.dockeractyl.serial.BidirectionalSerializer;
+import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.serial.ImageSerializer;
 import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequestMapping(path = "/image")
 public class ImageController {
     private final ImageStore imageStor;
-    private final BidirectionalSerializer<ImageSpec, Image> imageSer;
+    private final DockerSerializer<ImageSpec, Image> imageSer;
 
     @Autowired
     public ImageController(ImageStore imageStor, ImageSerializer imageSer) {

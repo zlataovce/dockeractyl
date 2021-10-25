@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.kcra.dockeractyl.docker.Container;
 import me.kcra.dockeractyl.docker.exceptions.ComposeException;
 import me.kcra.dockeractyl.docker.spec.ContainerSpec;
-import me.kcra.dockeractyl.serial.BidirectionalSerializer;
+import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.serial.ContainerSerializer;
 import me.kcra.dockeractyl.utils.JacksonUtils;
 import me.kcra.dockeractyl.utils.SerialUtils;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class ContainerStore {
     @Getter
     private final List<Container> containers = Collections.synchronizedList(new ArrayList<>());
-    private final BidirectionalSerializer<ContainerSpec, Container> containerSer;
+    private final DockerSerializer<ContainerSpec, Container> containerSer;
     private final TaskExecutor taskExecutor;
     private final Path tempFolder;
 
@@ -105,5 +105,15 @@ public class ContainerStore {
             throw new ComposeException("Process initialization error (does dockeractyl have enough permissions?)", e);
         }
         taskExecutor.execute(() -> FileSystemUtils.deleteRecursively(composeFolder));
+    }
+
+    public void composeAsynchronously(String[] composeFileContent) {
+        taskExecutor.execute(() -> {
+            try {
+                compose(composeFileContent);
+            } catch (ComposeException e) {
+                log.error("Could not compose container: " + e.getMessage());
+            }
+        });
     }
 }

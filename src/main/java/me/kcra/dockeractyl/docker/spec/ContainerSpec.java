@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Builder(builderClassName = "Builder")
-public final class ContainerSpec implements Specification {
+public final class ContainerSpec implements DockerData {
     @JsonProperty("Command")
     private String command;
     @JsonProperty("CreatedAt")
