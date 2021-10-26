@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.kcra.dockeractyl.docker.model.Image;
 import me.kcra.dockeractyl.docker.model.spec.ImageSpec;
 import me.kcra.dockeractyl.serial.DockerSerializer;
-import me.kcra.dockeractyl.serial.ImageSerializer;
+import me.kcra.dockeractyl.serial.ImageSerializer0;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import me.kcra.dockeractyl.utils.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class ImageStore {
     private final ObjectMapper mapper;
 
     @Autowired
-    public ImageStore(ImageSerializer imageSer, ObjectMapper mapper) {
+    public ImageStore(ImageSerializer0 imageSer, ObjectMapper mapper) {
         this.imageSer = imageSer;
         this.mapper = mapper;
     }

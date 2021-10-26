@@ -1,6 +1,11 @@
 package me.kcra.dockeractyl.docker.model;
 
-import lombok.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import me.kcra.dockeractyl.serial.ImageDeserializer;
 
 import java.util.Date;
 import java.util.List;
@@ -9,7 +14,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
-@AllArgsConstructor
+@JsonDeserialize(using = ImageDeserializer.class)
 public class Image {
     private List<Container> containers;
     private Date createdAt;

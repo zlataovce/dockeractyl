@@ -4,7 +4,7 @@ import me.kcra.dockeractyl.docker.model.Image;
 import me.kcra.dockeractyl.docker.model.spec.ImageSpec;
 import me.kcra.dockeractyl.docker.store.ImageStore;
 import me.kcra.dockeractyl.serial.DockerSerializer;
-import me.kcra.dockeractyl.serial.ImageSerializer;
+import me.kcra.dockeractyl.serial.ImageSerializer0;
 import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ public class ImageController {
     private final DockerSerializer<ImageSpec, Image> imageSer;
 
     @Autowired
-    public ImageController(ImageStore imageStor, ImageSerializer imageSer) {
+    public ImageController(ImageStore imageStor, ImageSerializer0 imageSer) {
         this.imageStor = imageStor;
         this.imageSer = imageSer;
     }

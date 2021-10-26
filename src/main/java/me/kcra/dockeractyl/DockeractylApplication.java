@@ -4,12 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import me.kcra.dockeractyl.utils.SystemUtils;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {"me.kcra.dockeractyl"})
 public class DockeractylApplication {
+    public static ApplicationContext applicationContext;
+
     public static void main(String[] args) {
         if (!SystemUtils.hasExecutable("docker")) {
             log.error("Docker was not found on your machine, please install it!");
@@ -19,7 +22,7 @@ public class DockeractylApplication {
             log.error("Docker Compose was not found on your machine, please install it!");
             System.exit(-1);
         }
-        new SpringApplicationBuilder(DockeractylApplication.class)
+        applicationContext = new SpringApplicationBuilder(DockeractylApplication.class)
                 .registerShutdownHook(true)
                 .run(args);
     }

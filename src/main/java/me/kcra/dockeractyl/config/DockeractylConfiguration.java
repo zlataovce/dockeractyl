@@ -19,7 +19,7 @@ public class DockeractylConfiguration {
         this.env = env;
     }
 
-    @Bean("taskScheduler")
+    @Bean
     public ThreadPoolTaskScheduler taskScheduler() {
         final ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(env.getProperty("dockeractyl.task.sched.pool", Integer.class, 2));
@@ -27,7 +27,7 @@ public class DockeractylConfiguration {
         return scheduler;
     }
 
-    @Bean("threadPool")
+    @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(env.getProperty("dockeractyl.task.exec.pool", Integer.class, 2));
@@ -35,7 +35,7 @@ public class DockeractylConfiguration {
         return executor;
     }
 
-    @Bean("tempFolder")
+    @Bean
     public Path tempFolder() {
         return Paths.get(env.getProperty("dockeractyl.temp", String.class, "<cwd>/dockeractyl/temp").replace("<cwd>", System.getProperty("user.dir")));
     }
