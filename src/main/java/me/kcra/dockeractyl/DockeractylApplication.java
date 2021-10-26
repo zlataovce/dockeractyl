@@ -6,9 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @Slf4j
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {"me.kcra.dockeractyl"})

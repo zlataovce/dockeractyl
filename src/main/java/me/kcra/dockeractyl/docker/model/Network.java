@@ -27,7 +27,7 @@ public class Network {
     }
 
     public enum Protocol {
-        UDP, TDP
+        UDP, TCP
     }
 
     public enum Scope {
