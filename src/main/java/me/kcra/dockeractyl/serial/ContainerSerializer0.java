@@ -16,13 +16,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class ContainerSerializer implements DockerSerializer<ContainerSpec, Container> {
+public class ContainerSerializer0 implements DockerSerializer<ContainerSpec, Container> {
     private final ImageStore imageStor;
     private final NetworkStore networkStor;
     private final DockerSerializer<String, Network.Port> portSer;
 
     @Autowired
-    public ContainerSerializer(ImageStore imageStor, NetworkStore networkStor, PortSerializer portSer) {
+    public ContainerSerializer0(ImageStore imageStor, NetworkStore networkStor, PortSerializer0 portSer) {
         this.imageStor = imageStor;
         this.portSer = portSer;
         this.networkStor = networkStor;

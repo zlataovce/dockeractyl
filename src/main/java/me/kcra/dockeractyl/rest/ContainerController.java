@@ -4,7 +4,7 @@ import me.kcra.dockeractyl.docker.model.Container;
 import me.kcra.dockeractyl.docker.model.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ContainerStore;
 import me.kcra.dockeractyl.serial.DockerSerializer;
-import me.kcra.dockeractyl.serial.ContainerSerializer;
+import me.kcra.dockeractyl.serial.ContainerSerializer0;
 import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,7 +24,7 @@ public class ContainerController {
     private final DockerSerializer<ContainerSpec, Container> containerSer;
 
     @Autowired
-    public ContainerController(ContainerStore containerStor, ContainerSerializer containerSer) {
+    public ContainerController(ContainerStore containerStor, ContainerSerializer0 containerSer) {
         this.containerStor = containerStor;
         this.containerSer = containerSer;
     }

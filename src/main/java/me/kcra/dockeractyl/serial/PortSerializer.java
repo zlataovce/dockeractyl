@@ -1,27 +1,24 @@
 package me.kcra.dockeractyl.serial;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.kcra.dockeractyl.docker.model.Network;
-import me.kcra.dockeractyl.utils.SerialUtils;
-import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Locale;
 
-@Service
-public class PortSerializer implements DockerSerializer<String, Network.Port> {
-    @Override
-    public String toSpec(Network.Port exact) {
-        if (exact.getOuter() != null) {
-            return exact.getInner() + "->" + exact.getOuter().getKey() + "/" + exact.getOuter().getValue().name().toLowerCase(Locale.ROOT);
-        }
-        return exact.getInner();
+public class PortSerializer extends StdSerializer<Network.Port> {
+    protected PortSerializer(Class<Network.Port> t) {
+        super(t);
     }
 
     @Override
-    public Network.Port fromSpec(String spec) {
-        if (spec.contains("->")) {
-            final String[] parts = spec.split("->");
-            return new Network.Port(parts[0], SerialUtils.fromDockerPort(parts[1]));
+    public void serialize(Network.Port value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        if (value.getOuter() != null) {
+            gen.writeString(value.getInner() + "->" + value.getOuter().getKey() + "/" + value.getOuter().getValue().name().toLowerCase(Locale.ROOT));
+        } else {
+            gen.writeString(value.getInner());
         }
-        return new Network.Port(spec, null);
     }
 }

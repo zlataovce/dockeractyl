@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.kcra.dockeractyl.docker.model.Image;
-import me.kcra.dockeractyl.docker.model.spec.ImageSpec;
-import me.kcra.dockeractyl.serial.DockerSerializer;
-import me.kcra.dockeractyl.serial.ImageSerializer0;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import me.kcra.dockeractyl.utils.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +25,10 @@ import java.util.concurrent.TimeUnit;
 public class ImageStore {
     @Getter
     private final List<Image> images = Collections.synchronizedList(new ArrayList<>());
-    private final DockerSerializer<ImageSpec, Image> imageSer;
     private final ObjectMapper mapper;
 
     @Autowired
-    public ImageStore(ImageSerializer0 imageSer, ObjectMapper mapper) {
-        this.imageSer = imageSer;
+    public ImageStore(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -47,9 +42,9 @@ public class ImageStore {
             new BufferedReader(new InputStreamReader(proc.getInputStream())).lines().forEach(e -> {
                 log.info("Retrieved image info: " + e);
                 try {
-                    images.add(imageSer.fromSpec(mapper.readValue(SerialUtils.stripEnds(e, "'"), ImageSpec.class)));
+                    images.add(mapper.readValue(SerialUtils.stripEnds(e, "'"), Image.class));
                 } catch (JsonProcessingException ex) {
-                    log.error("Could not retrieve image!", ex);
+                    log.error("Could not deserialize image!", ex);
                 }
             });
         } catch (IOException e) {

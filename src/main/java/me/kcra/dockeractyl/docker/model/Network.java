@@ -1,6 +1,8 @@
 package me.kcra.dockeractyl.docker.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
+import me.kcra.dockeractyl.serial.PortDeserializer;
 import me.kcra.dockeractyl.utils.ImmutablePair;
 import org.springframework.lang.Nullable;
 
@@ -35,6 +37,7 @@ public class Network {
     }
 
     @Data
+    @JsonDeserialize(using = PortDeserializer.class)
     public static class Port {
         private final String inner;
         private final @Nullable ImmutablePair<Integer, Protocol> outer;

@@ -1,6 +1,8 @@
 package me.kcra.dockeractyl.docker.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
+import me.kcra.dockeractyl.serial.ContainerDeserializer;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.Map;
 @ToString
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
-@AllArgsConstructor
+@JsonDeserialize(using = ContainerDeserializer.class)
 public class Container {
     private String command;
     private Date createdAt;

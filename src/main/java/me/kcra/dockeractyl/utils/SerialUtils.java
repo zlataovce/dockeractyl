@@ -1,10 +1,12 @@
 package me.kcra.dockeractyl.utils;
 
 import lombok.experimental.UtilityClass;
-import me.kcra.dockeractyl.docker.model.Network;
 
 import java.text.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -99,11 +101,6 @@ public class SerialUtils {
             s = s.substring(0, s.lastIndexOf(end) - 1);
         }
         return s;
-    }
-
-    public ImmutablePair<Integer, Network.Protocol> fromDockerPort(String s) {
-        final String[] parts = s.split("/");
-        return ImmutablePair.of(Integer.parseInt(parts[0]), Network.Protocol.valueOf(parts[1].toUpperCase(Locale.ROOT)));
     }
 
     public Map<String, String> parseLabels(String s) {
