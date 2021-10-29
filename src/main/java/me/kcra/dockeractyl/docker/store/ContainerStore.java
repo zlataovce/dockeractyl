@@ -6,12 +6,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.kcra.dockeractyl.docker.model.Container;
 import me.kcra.dockeractyl.docker.exceptions.ComposeException;
-import me.kcra.dockeractyl.docker.model.spec.ContainerSpec;
-import me.kcra.dockeractyl.serial.ContainerSerializer0;
-import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import me.kcra.dockeractyl.utils.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -31,14 +29,12 @@ import java.util.stream.Collectors;
 public class ContainerStore {
     @Getter
     private final List<Container> containers = Collections.synchronizedList(new ArrayList<>());
-    private final DockerSerializer<ContainerSpec, Container> containerSer;
     private final ObjectMapper mapper;
     private final TaskExecutor taskExecutor;
     private final Path tempFolder;
 
     @Autowired
-    public ContainerStore(ContainerSerializer0 containerSer, ObjectMapper mapper, ThreadPoolTaskExecutor taskExecutor, Path tempFolder) {
-        this.containerSer = containerSer;
+    public ContainerStore(ObjectMapper mapper, @Qualifier("taskExecutor") ThreadPoolTaskExecutor taskExecutor, Path tempFolder) {
         this.mapper = mapper;
         this.taskExecutor = taskExecutor;
         this.tempFolder = tempFolder;
@@ -55,7 +51,7 @@ public class ContainerStore {
                 reader.lines().forEach(e -> {
                     log.info("Retrieved container details: " + e);
                     try {
-                        containers.add(containerSer.fromSpec(mapper.readValue(SerialUtils.stripEnds(e, "'"), ContainerSpec.class)));
+                        containers.add(mapper.readValue(SerialUtils.stripEnds(e, "'"), Container.class));
                     } catch (JsonProcessingException ex) {
                         log.error("Could not retrieve container!", ex);
                     }

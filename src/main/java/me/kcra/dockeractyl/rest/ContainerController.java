@@ -1,10 +1,8 @@
 package me.kcra.dockeractyl.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.kcra.dockeractyl.docker.model.Container;
-import me.kcra.dockeractyl.docker.model.spec.ContainerSpec;
 import me.kcra.dockeractyl.docker.store.ContainerStore;
-import me.kcra.dockeractyl.serial.DockerSerializer;
-import me.kcra.dockeractyl.serial.ContainerSerializer0;
 import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,12 +19,12 @@ import java.util.Optional;
 @RequestMapping(path = "/container")
 public class ContainerController {
     private final ContainerStore containerStor;
-    private final DockerSerializer<ContainerSpec, Container> containerSer;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public ContainerController(ContainerStore containerStor, ContainerSerializer0 containerSer) {
+    public ContainerController(ContainerStore containerStor, ObjectMapper mapper) {
         this.containerStor = containerStor;
-        this.containerSer = containerSer;
+        this.mapper = mapper;
     }
 
     @GetMapping(path = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})

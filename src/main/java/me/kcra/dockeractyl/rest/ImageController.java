@@ -1,9 +1,8 @@
 package me.kcra.dockeractyl.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.kcra.dockeractyl.docker.model.Image;
-import me.kcra.dockeractyl.docker.model.spec.ImageSpec;
 import me.kcra.dockeractyl.docker.store.ImageStore;
-import me.kcra.dockeractyl.serial.DockerSerializer;
 import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,12 +17,12 @@ import java.util.Optional;
 @RequestMapping(path = "/image")
 public class ImageController {
     private final ImageStore imageStor;
-    private final DockerSerializer<ImageSpec, Image> imageSer;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public ImageController(ImageStore imageStor, ImageSerializer0 imageSer) {
+    public ImageController(ImageStore imageStor, ObjectMapper mapper) {
         this.imageStor = imageStor;
-        this.imageSer = imageSer;
+        this.mapper = mapper;
     }
 
     @GetMapping(path = "/find/{img}", produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -46,7 +46,7 @@ public class ContainerDeserializer extends StdDeserializer<Container> {
                                         .build()
                                 )).collect(Collectors.toUnmodifiableList())
                 )
-                // ports
+                .ports(Arrays.stream(node.get("Ports").asText().split(", ")).map(SerialUtils::deserializePort).collect(Collectors.toUnmodifiableList()))
                 .size(sizes.getKey())
                 .virtualSize(sizes.getValue())
                 .state(Container.State.valueOf(node.get("State").asText().toUpperCase(Locale.ROOT)))

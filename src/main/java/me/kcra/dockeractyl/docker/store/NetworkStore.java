@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.kcra.dockeractyl.docker.model.Network;
-import me.kcra.dockeractyl.docker.model.spec.NetworkSpec;
-import me.kcra.dockeractyl.serial.DockerSerializer;
-import me.kcra.dockeractyl.serial.NetworkSerializer;
 import me.kcra.dockeractyl.utils.SerialUtils;
 import me.kcra.dockeractyl.utils.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +25,10 @@ import java.util.concurrent.TimeUnit;
 public class NetworkStore {
     @Getter
     private final List<Network> networks = Collections.synchronizedList(new ArrayList<>());
-    private final DockerSerializer<NetworkSpec, Network> networkSer;
     private final ObjectMapper mapper;
 
     @Autowired
-    public NetworkStore(NetworkSerializer networkSer, ObjectMapper mapper) {
-        this.networkSer = networkSer;
+    public NetworkStore(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -48,7 +43,7 @@ public class NetworkStore {
                 reader.lines().forEach(e -> {
                     log.info("Retrieved network details: " + e);
                     try {
-                        networks.add(networkSer.fromSpec(mapper.readValue(SerialUtils.stripEnds(e, "'"), NetworkSpec.class)));
+                        networks.add(mapper.readValue(SerialUtils.stripEnds(e, "'"), Network.class));
                     } catch (JsonProcessingException ex) {
                         log.error("Could not retrieve network!", ex);
                     }

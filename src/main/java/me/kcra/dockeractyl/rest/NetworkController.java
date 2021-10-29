@@ -1,10 +1,8 @@
 package me.kcra.dockeractyl.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.kcra.dockeractyl.docker.model.Network;
-import me.kcra.dockeractyl.docker.model.spec.NetworkSpec;
 import me.kcra.dockeractyl.docker.store.NetworkStore;
-import me.kcra.dockeractyl.serial.DockerSerializer;
-import me.kcra.dockeractyl.serial.NetworkSerializer;
 import me.kcra.dockeractyl.utils.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,12 +17,12 @@ import java.util.Optional;
 @RequestMapping(path = "/network")
 public class NetworkController {
     private final NetworkStore networkStor;
-    private final DockerSerializer<NetworkSpec, Network> networkSer;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public NetworkController(NetworkStore networkStor, NetworkSerializer networkSer) {
+    public NetworkController(NetworkStore networkStor, ObjectMapper mapper) {
         this.networkStor = networkStor;
-        this.networkSer = networkSer;
+        this.mapper = mapper;
     }
 
     @GetMapping(path = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})

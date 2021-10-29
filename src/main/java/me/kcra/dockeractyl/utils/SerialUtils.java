@@ -1,12 +1,10 @@
 package me.kcra.dockeractyl.utils;
 
 import lombok.experimental.UtilityClass;
+import me.kcra.dockeractyl.docker.model.Network;
 
 import java.text.*;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -111,5 +109,21 @@ public class SerialUtils {
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public Network.Port deserializePort(String node) {
+        if (node.contains("->")) {
+            final String[] parts = node.split("->");
+            final String[] portParts = parts[1].split("/");
+            return new Network.Port(parts[0], ImmutablePair.of(Integer.parseInt(portParts[0]), Network.Protocol.valueOf(portParts[1].toUpperCase(Locale.ROOT))));
+        }
+        return new Network.Port(node, null);
+    }
+
+    public String serializePort(Network.Port value) {
+        if (value.getOuter() != null) {
+            return value.getInner() + "->" + value.getOuter().getKey() + "/" + value.getOuter().getValue().name().toLowerCase(Locale.ROOT);
+        }
+        return value.getInner();
     }
 }

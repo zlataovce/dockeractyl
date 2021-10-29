@@ -1,18 +1,18 @@
 package me.kcra.dockeractyl.docker.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.*;
-import me.kcra.dockeractyl.serial.ContainerDeserializer;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 @Getter
 @ToString
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
-@JsonDeserialize(using = ContainerDeserializer.class)
 public class Container {
     private String command;
     private Date createdAt;
@@ -22,8 +22,8 @@ public class Container {
     private int localVolumes;
     private String mounts;
     private String names;
-    private List<Network> networks;
-    private List<Network.Port> ports;
+    private Collection<Network> networks;
+    private Collection<Network.Port> ports;
     private long size;
     private long virtualSize;
     private State state;

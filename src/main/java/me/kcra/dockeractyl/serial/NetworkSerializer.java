@@ -1,40 +1,31 @@
 package me.kcra.dockeractyl.serial;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.kcra.dockeractyl.docker.model.Network;
-import me.kcra.dockeractyl.docker.model.spec.NetworkSpec;
 import me.kcra.dockeractyl.utils.SerialUtils;
-import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-@Service
-public class NetworkSerializer implements DockerSerializer<NetworkSpec, Network> {
-    @Override
-    public NetworkSpec toSpec(Network exact) {
-        return NetworkSpec.builder()
-                .createdAt(SerialUtils.toTimestamp(exact.getCreatedAt()))
-                .driver(exact.getDriver().name().toLowerCase(Locale.ROOT))
-                .id(exact.getId())
-                .ipv6(Boolean.toString(exact.isIpv6()))
-                .internal(Boolean.toString(exact.isInternal()))
-                .labels(exact.getLabels().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")))
-                .name(exact.getName())
-                .scope(exact.getScope().name().toLowerCase(Locale.ROOT))
-                .build();
+public class NetworkSerializer extends StdSerializer<Network> {
+    protected NetworkSerializer(Class<Network> t) {
+        super(t);
     }
 
     @Override
-    public Network fromSpec(NetworkSpec spec) {
-        return Network.builder()
-                .createdAt(SerialUtils.fromTimestamp(spec.getCreatedAt()))
-                .driver(Network.Driver.valueOf(spec.getDriver().toUpperCase(Locale.ROOT)))
-                .id(spec.getId())
-                .ipv6(Boolean.parseBoolean(spec.getIpv6()))
-                .internal(Boolean.parseBoolean(spec.getInternal()))
-                .labels(SerialUtils.parseLabels(spec.getLabels()))
-                .name(spec.getName())
-                .scope(Network.Scope.valueOf(spec.getScope().toUpperCase(Locale.ROOT)))
-                .build();
+    public void serialize(Network value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("CreatedAt", SerialUtils.toTimestamp(value.getCreatedAt()));
+        gen.writeStringField("Driver", value.getDriver().name().toLowerCase(Locale.ROOT));
+        gen.writeStringField("ID", value.getId());
+        gen.writeStringField("IPv6", Boolean.toString(value.isIpv6()));
+        gen.writeStringField("Internal", Boolean.toString(value.isInternal()));
+        gen.writeStringField("Labels", value.getLabels().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")));
+        gen.writeStringField("Name", value.getName());
+        gen.writeStringField("Scope", value.getScope().name().toLowerCase(Locale.ROOT));
+        gen.writeEndObject();
     }
 }

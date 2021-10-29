@@ -19,7 +19,7 @@ public class DockeractylConfiguration {
         this.env = env;
     }
 
-    @Bean
+    @Bean("taskScheduler")
     public ThreadPoolTaskScheduler taskScheduler() {
         final ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(env.getProperty("dockeractyl.task.sched.pool", Integer.class, 2));
@@ -27,7 +27,7 @@ public class DockeractylConfiguration {
         return scheduler;
     }
 
-    @Bean
+    @Bean("taskExecutor")
     public ThreadPoolTaskExecutor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(env.getProperty("dockeractyl.task.exec.pool", Integer.class, 2));
